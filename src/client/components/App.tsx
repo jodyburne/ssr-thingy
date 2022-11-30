@@ -5,7 +5,10 @@ const App: React.FC = () => {
   console.log("outside func", greeting);
 
   const handleClick = () => {
-    console.log("inside func");
+    if (greeting !== "hello") {
+      setGreeting("hello");
+      return;
+    }
     setGreeting("goodbye");
   };
   return <button onClick={() => handleClick()}>{greeting}</button>;

@@ -6,6 +6,8 @@ import path from "path";
 import webpack from "webpack";
 import webpackDevMiddleware from "webpack-dev-middleware";
 import webpackHotMiddleware from "webpack-hot-middleware";
+import { data } from "./mockData";
+
 // @ts-ignore
 import webpackConfig from "../../webpack.config";
 
@@ -19,7 +21,7 @@ const Html = () => (
         <App />
       </div>
     </body>
-    <script type="application/json" src="/main.js"></script>
+    <script type="application/javascript" src="/main.js"></script>
   </html>
 );
 
@@ -42,6 +44,11 @@ server.use(
 server.get("/", (_, res) => {
   const content = renderToString(<Html />);
   res.send(content);
+});
+
+server.get("/posts", (req, res, next) => {
+  const allPosts = data.map((user) => user.posts);
+  res.send(allPosts);
 });
 
 server.listen(3007, () => {

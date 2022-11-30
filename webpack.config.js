@@ -1,5 +1,4 @@
 const path = require("path");
-const nodeExternals = require("webpack-node-externals");
 
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const { WebpackManifestPlugin } = require("webpack-manifest-plugin");
@@ -9,8 +8,6 @@ const webpackConfig = {
   mode: "development",
   entry: {
     main: "./src/client/index.tsx",
-    // client: path.resolve(__dirname, "src/client/index.tsx"),
-    // server: path.resolve(__dirname, "src/server/server.tsx"),
   },
   output: {
     path: path.resolve(__dirname, "dist"),
@@ -19,10 +16,9 @@ const webpackConfig = {
   resolve: {
     extensions: [".ts", ".tsx", ".js"],
   },
-  target: "node",
-  externals: [nodeExternals()],
-  node: {
-    __dirname: false,
+  target: "web",
+  output: {
+    publicPath: "/",
   },
   module: {
     rules: [
