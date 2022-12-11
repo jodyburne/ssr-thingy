@@ -6,8 +6,13 @@ import path from "path";
 import webpack from "webpack";
 import webpackDevMiddleware from "webpack-dev-middleware";
 import webpackHotMiddleware from "webpack-hot-middleware";
-import { data } from "./mockData";
-
+import { ApolloServer } from "apollo-server-express";
+import {
+  ApolloServerPluginDrainHttpServer,
+  ApolloServerPluginLandingPageLocalDefault,
+} from "apollo-server-core";
+import http from "http";
+import { typeDefs, resolvers } from "./apolloServer";
 // @ts-ignore
 import webpackConfig from "../../webpack.config";
 
@@ -25,32 +30,55 @@ const Html = () => (
   </html>
 );
 
-const server = express();
+// @ts-ignore
+async function startApolloServer(typeDefs, resolvers) {
+  const server = express();
 
-server.use(express.static(path.resolve(__dirname, "dist")));
+  const httpServer = http.createServer(server);
 
-const compiler = webpack(webpackConfig);
+  const apolloServer = new ApolloServer({
+    typeDefs,
+    resolvers,
+    csrfPrevention: true,
+    cache: "bounded",
+    plugins: [
+      ApolloServerPluginDrainHttpServer({ httpServer }),
+      ApolloServerPluginLandingPageLocalDefault({ embed: true }),
+    ],
+  });
 
-server.use(
-  webpackDevMiddleware(compiler, {
-    serverSideRender: true,
-  })
-);
-server.use(
-  webpackHotMiddleware(compiler, {
-    log: false,
-  })
-);
-server.get("/", (_, res) => {
-  const content = renderToString(<Html />);
-  res.send(content);
-});
+  await apolloServer.start();
 
-server.get("/posts", (req, res, next) => {
-  const allPosts = data.map((user) => user.posts);
-  res.send(allPosts);
-});
+  apolloServer.applyMiddleware({ app: server });
 
-server.listen(3007, () => {
-  console.log(`Server running on http://localhost:3007`);
-});
+  server.use(express.static(path.resolve(__dirname, "dist")));
+
+  // @ts-ignore
+  const compiler = webpack(webpackConfig);
+
+  server.use(
+    webpackDevMiddleware(compiler, {
+      serverSideRender: true,
+    })
+  );
+  server.use(
+    webpackHotMiddleware(compiler, {
+      log: false,
+    })
+  );
+  server.get("/", (_, res) => {
+    const content = renderToString(<Html />);
+    res.send(content);
+  });
+
+  // server.listen(3007, () => {
+  //   console.log(`Server running on http://localhost:3007`);
+  // });
+
+  await new Promise<void>((resolve) =>
+    httpServer.listen({ port: 3007 }, resolve)
+  );
+  console.log(`🚀 Server ready at http://localhost:3007`);
+}
+
+startApolloServer(typeDefs, resolvers);
