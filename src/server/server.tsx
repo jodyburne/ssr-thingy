@@ -13,8 +13,8 @@ import {
 } from "apollo-server-core";
 import http from "http";
 import { typeDefs, resolvers } from "./apolloServer";
-// @ts-ignore
 import webpackConfig from "../../webpack.config";
+import { DocumentNode } from "graphql";
 
 const Html = () => (
   <html lang="en">
@@ -30,8 +30,7 @@ const Html = () => (
   </html>
 );
 
-// @ts-ignore
-async function startApolloServer(typeDefs, resolvers) {
+async function startApolloServer(typeDefs: DocumentNode, resolvers: {}) {
   const server = express();
 
   const httpServer = http.createServer(server);
@@ -70,10 +69,6 @@ async function startApolloServer(typeDefs, resolvers) {
     const content = renderToString(<Html />);
     res.send(content);
   });
-
-  // server.listen(3007, () => {
-  //   console.log(`Server running on http://localhost:3007`);
-  // });
 
   await new Promise<void>((resolve) =>
     httpServer.listen({ port: 3007 }, resolve)

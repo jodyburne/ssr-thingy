@@ -36,6 +36,7 @@ const webpackConfig = {
     new WebpackManifestPlugin(),
     new webpack.HotModuleReplacementPlugin(),
   ],
+  devtool: "inline-source-map",
 };
 
 module.exports = webpackConfig;

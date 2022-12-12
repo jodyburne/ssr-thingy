@@ -16,5 +16,7 @@
     "strictNullChecks": true,
     "lib": ["es6", "dom", "dom.iterable", "esnext"],
   },
+  "exclude": ["node_modules",
+    "**/node_modules/*",],
   "include": ["**/*.d.ts", "**/*.ts", "**/*.tsx"],
   }

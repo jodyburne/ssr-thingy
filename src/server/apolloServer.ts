@@ -1,8 +1,5 @@
 import { data as users } from "./mockData";
 import { gql } from "apollo-server-core";
-// A schema is a collection of type definitions (hence "typeDefs")
-// that together define the "shape" of queries that are executed against
-// your data.
 
 export const typeDefs = gql`
   type Post {
@@ -20,6 +17,7 @@ export const typeDefs = gql`
 
   type Query {
     users: [User]
+    posts: [Post]
   }
 `;
 
@@ -28,5 +26,6 @@ export const typeDefs = gql`
 export const resolvers = {
   Query: {
     users: () => users,
+    posts: () => users.flatMap((user) => user.posts),
   },
 };

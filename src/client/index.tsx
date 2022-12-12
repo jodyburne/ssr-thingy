@@ -8,9 +8,3 @@ ReactDOM.hydrate(
   document.getElementById("root"),
   () => console.log("in hydration")
 );
-// whats dis?
-// @ts-ignore
-// if (module.hot) {
-//   // @ts-ignore
-//   module.hot.accept();
-// }

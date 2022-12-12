@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import {
   ApolloClient,
   InMemoryCache,
@@ -8,20 +8,17 @@ import {
   HttpLink,
 } from "@apollo/client";
 import fetch from "cross-fetch";
-import e from "express";
 
 const client = new ApolloClient({
-  link: new HttpLink({ uri: "http://localhost:3007", fetch }),
+  link: new HttpLink({ uri: "http://localhost:3007/graphql", fetch }),
   cache: new InMemoryCache(),
 });
 
-const GET_USERS = gql`
-  query getUsers {
-    users {
-      posts {
-        title
-        description
-      }
+const GET_POSTS = gql`
+  query getPosts {
+    posts {
+      title
+      id
     }
   }
 `;
@@ -47,22 +44,24 @@ const App: React.FC = () => {
 export default App;
 
 const Posts = ({ greeting }: { greeting: string }) => {
-  const { loading, error, data } = useQuery(GET_USERS);
+  const { loading, error, data } = useQuery(GET_POSTS);
   const [posts, setPosts] = useState([]);
-  console.log(data);
-  // useEffect(() => {
-  //   if (greeting === "Show Posts") {
-  //     setPosts([]);
-  //   } else setPosts(data.users.map((user: any) => user.posts));
-  // });
+
+  useEffect(() => {
+    if (greeting === "Show Posts") {
+      setPosts([]);
+    } else setPosts(data.posts);
+  }, [greeting]);
 
   return (
     <>
-      {posts.map(({ title, description }) => (
-        <>
-          <b>{title}</b>
-          <p>{description}</p>
-        </>
+      {posts.map(({ title, id }) => (
+        <Fragment key={id}>
+          <p>
+            {title}
+            <b> #{id}</b>
+          </p>
+        </Fragment>
       ))}
     </>
   );
